@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Математика — тренажёр умножения и деления</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg1:#6a5cff; --bg2:#b06cff; --bg3:#ff7ac0;
+    --card:#ffffff; --ink:#34306b; --muted:#8b87b8;
+    --good:#22c98b; --bad:#ff6b7a; --accent:#ff9f43; --accent2:#4fd1ff;
+    --shadow:0 14px 30px rgba(60,40,120,.18);
+    --radius:22px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    font-family:'Nunito',system-ui,sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2) 55%,var(--bg3));
+    background-attachment:fixed;
+    overflow-x:hidden;
+  }
+  /* floating background shapes */
+  .blob{position:fixed; border-radius:50%; filter:blur(6px); opacity:.25; z-index:0; animation:float 9s ease-in-out infinite;}
+  .b1{width:160px;height:160px;background:#fff;top:8%;left:-40px;}
+  .b2{width:120px;height:120px;background:#ffe27a;bottom:12%;right:-30px;animation-delay:2s;}
+  .b3{width:90px;height:90px;background:#7afcff;top:40%;right:10%;animation-delay:4s;}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-22px)}}
+
+  .wrap{position:relative; z-index:1; max-width:560px; margin:0 auto; padding:16px 14px 40px;}
+
+  header.top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px;}
+  .logo{font-family:'Baloo 2',cursive; font-weight:800; color:#fff; font-size:23px; line-height:1.05; text-shadow:0 3px 0 rgba(0,0,0,.12); display:flex; align-items:center; gap:8px;}
+  .logo .star{font-size:24px; animation:spin 6s linear infinite; display:inline-block;}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  .stats{display:flex; gap:8px;}
+  .chip{background:rgba(255,255,255,.92); border-radius:16px; padding:7px 12px; box-shadow:var(--shadow); text-align:center; min-width:62px;}
+  .chip .v{font-family:'Baloo 2',cursive; font-weight:800; font-size:18px; line-height:1; color:var(--ink);}
+  .chip .l{font-size:10px; color:var(--muted); font-weight:800; text-transform:uppercase; letter-spacing:.4px;}
+  .chip.streak .v{color:var(--accent);}
+
+  /* nav tabs */
+  nav.tabs{display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px;}
+  .tab{background:rgba(255,255,255,.85); border:none; border-radius:16px; padding:10px 4px; cursor:pointer; font-family:'Baloo 2',cursive; font-weight:700; font-size:12px; color:var(--ink); box-shadow:var(--shadow); transition:transform .12s, background .2s; display:flex; flex-direction:column; align-items:center; gap:3px;}
+  .tab .ic{font-size:22px;}
+  .tab:active{transform:scale(.94);}
+  .tab.active{background:#fff; transform:translateY(-3px) scale(1.03); outline:3px solid #ffe27a;}
+
+  .panel{display:none; animation:pop .3s ease;}
+  .panel.active{display:block;}
+  @keyframes pop{from{opacity:0; transform:translateY(10px) scale(.98)}to{opacity:1; transform:none}}
+
+  .card{background:var(--card); border-radius:var(--radius); padding:18px; box-shadow:var(--shadow); margin-bottom:14px;}
+  h2.title{font-family:'Baloo 2',cursive; margin:2px 0 10px; font-size:21px;}
+  p.sub{margin:0 0 14px; color:var(--muted); font-weight:700; font-size:14px;}
+
+  /* level selector */
+  .levels{display:flex; gap:8px; margin-bottom:14px;}
+  .lvl{flex:1; border:none; border-radius:14px; padding:11px 6px; cursor:pointer; font-family:'Baloo 2',cursive; font-weight:700; font-size:13px; background:#f1eefe; color:var(--ink); transition:transform .12s; display:flex; flex-direction:column; align-items:center; gap:2px;}
+  .lvl small{font-weight:700; font-size:10px; color:var(--muted);}
+  .lvl:active{transform:scale(.95);}
+  .lvl.active{color:#fff; box-shadow:var(--shadow);}
+  .lvl.active small{color:rgba(255,255,255,.85);}
+  .lvl.l1.active{background:linear-gradient(135deg,#22c98b,#15b07a);}
+  .lvl.l2.active{background:linear-gradient(135deg,#ff9f43,#ff7a3d);}
+  .lvl.l3.active{background:linear-gradient(135deg,#ff6b7a,#e23d6e);}
+
+  /* question */
+  .q{font-family:'Baloo 2',cursive; font-weight:800; text-align:center; font-size:46px; margin:6px 0 4px; letter-spacing:1px;}
+  .q .op{color:var(--bg2);}
+  .qbox{text-align:center; margin-bottom:8px;}
+  .answers{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;}
+  .ans{border:none; border-radius:16px; padding:18px; font-family:'Baloo 2',cursive; font-weight:800; font-size:26px; cursor:pointer; background:#f1eefe; color:var(--ink); transition:transform .1s; box-shadow:0 4px 0 #d9d2f5;}
+  .ans:active{transform:translateY(2px); box-shadow:0 2px 0 #d9d2f5;}
+  .ans.correct{background:var(--good); color:#fff; box-shadow:0 4px 0 #15a06b; animation:bounce .4s;}
+  .ans.wrong{background:var(--bad); color:#fff; box-shadow:0 4px 0 #c83b52; animation:shake .35s;}
+  @keyframes bounce{0%,100%{transform:none}30%{transform:scale(1.12)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+
+  .feedback{height:26px; text-align:center; font-family:'Baloo 2',cursive; font-weight:800; font-size:18px; margin-top:6px;}
+  .feedback.ok{color:var(--good);}
+  .feedback.no{color:var(--bad);}
+
+  .progress{height:12px; background:#eee8ff; border-radius:99px; overflow:hidden; margin-top:14px;}
+  .progress>i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--accent2),var(--good)); transition:width .4s;}
+
+  /* multiplication table */
+  .tablewrap{overflow-x:auto; -webkit-overflow-scrolling:touch; padding-bottom:4px;}
+  table.mt{border-collapse:separate; border-spacing:4px; margin:0 auto;}
+  table.mt td{width:34px; height:34px; text-align:center; border-radius:9px; font-weight:800; font-size:14px; cursor:pointer; background:#f1eefe; color:var(--ink); transition:transform .1s;}
+  table.mt td.head{background:var(--bg2); color:#fff; cursor:default; font-family:'Baloo 2',cursive;}
+  table.mt td.corner{background:transparent; cursor:default;}
+  table.mt td.hl{background:#ffe27a; transform:scale(1.12);}
+  table.mt td.sel{background:var(--good); color:#fff; transform:scale(1.18);}
+  .mtresult{text-align:center; font-family:'Baloo 2',cursive; font-weight:800; font-size:24px; margin-top:14px; min-height:30px; color:var(--bg2);}
+  .dots{display:flex; flex-wrap:wrap; gap:5px; justify-content:center; margin-top:12px;}
+  .dotgrp{display:grid; gap:4px; padding:6px; background:#f7f4ff; border-radius:12px;}
+  .dot{width:13px; height:13px; border-radius:50%; background:var(--accent); animation:dotin .3s ease both;}
+  @keyframes dotin{from{transform:scale(0)}to{transform:scale(1)}}
+
+  /* concept */
+  .ccontrols{display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:12px;}
+  .stepper{display:flex; align-items:center; gap:6px; background:#f1eefe; border-radius:14px; padding:6px;}
+  .stepper button{width:34px; height:34px; border:none; border-radius:10px; background:#fff; font-size:20px; font-weight:800; cursor:pointer; color:var(--bg2); box-shadow:0 2px 4px rgba(0,0,0,.08);}
+  .stepper .num{font-family:'Baloo 2',cursive; font-weight:800; font-size:22px; min-width:34px; text-align:center;}
+  .stepper .lab{font-size:11px; font-weight:800; color:var(--muted); padding:0 4px;}
+  .playbtn{border:none; border-radius:16px; padding:12px 22px; font-family:'Baloo 2',cursive; font-weight:800; font-size:16px; color:#fff; cursor:pointer; background:linear-gradient(135deg,var(--bg1),var(--bg3)); box-shadow:var(--shadow);}
+  .playbtn:active{transform:scale(.96);}
+  .stage{min-height:170px; background:#f7f4ff; border-radius:16px; padding:14px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;}
+  .stage .cap{font-family:'Baloo 2',cursive; font-weight:800; font-size:20px; text-align:center; color:var(--ink);}
+  .baskets{display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
+  .basket{background:#fff; border:3px dashed #c9bdf5; border-radius:14px; padding:8px; min-width:54px; min-height:54px; display:grid; grid-template-columns:repeat(auto-fit,16px); gap:4px; align-content:center; justify-content:center;}
+  .cdot{width:14px; height:14px; border-radius:50%; background:var(--accent2);}
+
+  .segbtns{display:flex; gap:8px; justify-content:center; margin-bottom:12px;}
+  .seg{border:none; border-radius:12px; padding:8px 16px; font-family:'Baloo 2',cursive; font-weight:700; font-size:14px; background:#f1eefe; color:var(--ink); cursor:pointer;}
+  .seg.active{background:var(--bg2); color:#fff;}
+
+  .reset{display:block; margin:8px auto 0; border:none; background:transparent; color:var(--muted); font-weight:800; font-size:12px; cursor:pointer; text-decoration:underline;}
+
+  /* confetti */
+  #confetti{position:fixed; inset:0; pointer-events:none; z-index:50;}
+  .conf{position:absolute; font-size:20px; will-change:transform; animation:fall linear forwards;}
+  @keyframes fall{to{transform:translateY(110vh) rotate(540deg); opacity:0;}}
+
+  .footer{text-align:center; color:rgba(255,255,255,.8); font-weight:800; font-size:12px; margin-top:8px;}
+
+  @media(max-width:380px){
+    table.mt td{width:30px;height:30px;font-size:13px;}
+    .q{font-size:40px;}
+    .ans{font-size:22px;padding:15px;}
+  }
+</style>
+</head>
+<body>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<div id="confetti"></div>
+
+<div class="wrap">
+  <header class="top">
+    <div class="logo"><span class="star">⭐</span><span>Математика<br>играй и учись</span></div>
+    <div class="stats">
+      <div class="chip"><div class="v" id="score">0</div><div class="l">Очки</div></div>
+      <div class="chip streak"><div class="v" id="streak">0</div><div class="l">Серия 🔥</div></div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="mult"><span class="ic">✖️</span>Умножение</button>
+    <button class="tab" data-tab="div"><span class="ic">➗</span>Деление</button>
+    <button class="tab" data-tab="table"><span class="ic">🔢</span>Таблица</button>
+    <button class="tab" data-tab="concept"><span class="ic">✨</span>Как это</button>
+  </nav>
+
+  <!-- УМНОЖЕНИЕ -->
+  <section class="panel active" id="mult">
+    <div class="card">
+      <h2 class="title">Тренировка умножения ✖️</h2>
+      <p class="sub">Выбери уровень и решай — примеры не закончатся!</p>
+      <div class="levels">
+        <button class="lvl l1 active" data-lvl="1">Лёгкий<small>от 1 до 5</small></button>
+        <button class="lvl l2" data-lvl="2">Средний<small>от 1 до 10</small></button>
+        <button class="lvl l3" data-lvl="3">Сложный<small>до 12</small></button>
+      </div>
+      <div class="qbox">
+        <div class="q" id="mq">3 <span class="op">×</span> 4</div>
+      </div>
+      <div class="answers" id="mAns"></div>
+      <div class="feedback" id="mFb"></div>
+      <div class="progress"><i id="mBar"></i></div>
+    </div>
+  </section>
+
+  <!-- ДЕЛЕНИЕ -->
+  <section class="panel" id="div">
+    <div class="card">
+      <h2 class="title">Тренировка деления ➗</h2>
+      <p class="sub">Деление — это умножение наоборот. Попробуй!</p>
+      <div class="levels">
+        <button class="lvl l1 active" data-lvl="1">Лёгкий<small>от 1 до 5</small></button>
+        <button class="lvl l2" data-lvl="2">Средний<small>от 1 до 10</small></button>
+        <button class="lvl l3" data-lvl="3">Сложный<small>до 12</small></button>
+      </div>
+      <div class="qbox">
+        <div class="q" id="dq">12 <span class="op">÷</span> 4</div>
+      </div>
+      <div class="answers" id="dAns"></div>
+      <div class="feedback" id="dFb"></div>
+      <div class="progress"><i id="dBar"></i></div>
+    </div>
+  </section>
+
+  <!-- ТАБЛИЦА -->
+  <section class="panel" id="table">
+    <div class="card">
+      <h2 class="title">Таблица умножения 🔢</h2>
+      <p class="sub">Нажми на клетку — увидишь пример и картинку.</p>
+      <div class="tablewrap"><table class="mt" id="mt"></table></div>
+      <div class="mtresult" id="mtRes">Нажми на любую клетку 👆</div>
+      <div class="dots" id="mtDots"></div>
+    </div>
+  </section>
+
+  <!-- КОНЦЕПЦИЯ -->
+  <section class="panel" id="concept">
+    <div class="card">
+      <h2 class="title">Что значит умножать и делить? ✨</h2>
+      <p class="sub">Посмотри анимацию — и сразу станет понятно.</p>
+      <div class="segbtns">
+        <button class="seg active" data-mode="mul">Умножение ✖️</button>
+        <button class="seg" data-mode="div">Деление ➗</button>
+      </div>
+      <div class="ccontrols">
+        <div class="stepper">
+          <button data-d="-1" data-k="a">−</button>
+          <span class="num" id="ca">3</span>
+          <span class="lab" id="laba">в группе</span>
+          <button data-d="1" data-k="a">+</button>
+        </div>
+        <div class="stepper">
+          <button data-d="-1" data-k="b">−</button>
+          <span class="num" id="cb">4</span>
+          <span class="lab" id="labb">групп</span>
+          <button data-d="1" data-k="b">+</button>
+        </div>
+      </div>
+      <button class="playbtn" id="play">▶ Показать</button>
+      <div class="stage" id="stage" style="margin-top:12px;">
+        <div class="cap" id="cap">Нажми «Показать» ▶</div>
+        <div class="baskets" id="baskets"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">Сделано с ❤️ для тебя · решай каждый день!</div>
+</div>
+
+<script>
+/* ---------- общее ---------- */
+let score=0, streak=0;
+const $=id=>document.getElementById(id);
+function addScore(n){ score+=n; $('score').textContent=score; }
+function setStreak(n){ streak=n; $('streak').textContent=streak; }
+
+function confetti(){
+  const box=$('confetti'); const emo=['⭐','🎉','✨','🌟','💜','🎈'];
+  for(let i=0;i<18;i++){
+    const s=document.createElement('div'); s.className='conf';
+    s.textContent=emo[Math.floor(Math.random()*emo.length)];
+    s.style.left=Math.random()*100+'vw';
+    s.style.top=(-10-Math.random()*20)+'vh';
+    s.style.fontSize=(16+Math.random()*16)+'px';
+    s.style.animationDuration=(1.6+Math.random()*1.3)+'s';
+    box.appendChild(s);
+    setTimeout(()=>s.remove(),3200);
+  }
+}
+
+/* ---------- вкладки ---------- */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    $(t.dataset.tab).classList.add('active');
+  };
+});
+
+/* ---------- движок тренировки ---------- */
+function makeTrainer(cfg){
+  let level=1, cur=null, correctStreak=0;
+  const ranges={1:5,2:10,3:12};
+  function rnd(max){ return 1+Math.floor(Math.random()*max); }
+  function gen(){
+    const max=ranges[level];
+    if(cfg.type==='mul'){
+      const a=rnd(max), b=rnd(max);
+      cur={a,b,ans:a*b, text:a+' <span class="op">×</span> '+b};
+    } else {
+      // деление: сначала строим произведение, потом делим
+      const b=rnd(max), q=rnd(max);
+      const a=b*q;
+      cur={a,b,ans:q, text:a+' <span class="op">÷</span> '+b};
+    }
+    $(cfg.q).innerHTML=cur.text;
+    renderAnswers();
+    $(cfg.fb).textContent=''; $(cfg.fb).className='feedback';
+  }
+  function options(correct){
+    const set=new Set([correct]);
+    while(set.size<4){
+      let d=correct+(Math.floor(Math.random()*7)-3);
+      if(d<0) d=Math.abs(d)+1;
+      if(d!==correct) set.add(d);
+    }
+    return [...set].sort(()=>Math.random()-0.5);
+  }
+  function renderAnswers(){
+    const box=$(cfg.ans); box.innerHTML='';
+    options(cur.ans).forEach(v=>{
+      const b=document.createElement('button');
+      b.className='ans'; b.textContent=v;
+      b.onclick=()=>choose(b,v);
+      box.appendChild(b);
+    });
+  }
+  function choose(btn,v){
+    [...$(cfg.ans).children].forEach(b=>b.disabled=true);
+    if(v===cur.ans){
+      btn.classList.add('correct');
+      const pts=10*level;
+      addScore(pts); correctStreak++; setStreak(correctStreak);
+      $(cfg.fb).textContent='Верно! +'+pts+' 🎉'; $(cfg.fb).className='feedback ok';
+      if(correctStreak%3===0) confetti();
+      const bar=$(cfg.bar); bar.style.width=Math.min(100,(correctStreak%5)*20)+'%';
+      setTimeout(gen,750);
+    } else {
+      btn.classList.add('wrong');
+      correctStreak=0; setStreak(0);
+      [...$(cfg.ans).children].forEach(b=>{ if(+b.textContent===cur.ans) b.classList.add('correct'); });
+      $(cfg.fb).textContent='Правильно: '+cur.ans+' 💪'; $(cfg.fb).className='feedback no';
+      $(cfg.bar).style.width='0%';
+      setTimeout(gen,1500);
+    }
+  }
+  // уровни
+  document.querySelectorAll('#'+cfg.panel+' .lvl').forEach(l=>{
+    l.onclick=()=>{
+      document.querySelectorAll('#'+cfg.panel+' .lvl').forEach(x=>x.classList.remove('active'));
+      l.classList.add('active'); level=+l.dataset.lvl; correctStreak=0; setStreak(0);
+      $(cfg.bar).style.width='0%'; gen();
+    };
+  });
+  gen();
+}
+makeTrainer({type:'mul',panel:'mult',q:'mq',ans:'mAns',fb:'mFb',bar:'mBar'});
+makeTrainer({type:'div',panel:'div',q:'dq',ans:'dAns',fb:'dFb',bar:'dBar'});
+
+/* ---------- таблица умножения ---------- */
+(function(){
+  const t=$('mt'); let html='';
+  for(let r=0;r<=10;r++){
+    html+='<tr>';
+    for(let c=0;c<=10;c++){
+      if(r===0&&c===0){ html+='<td class="corner">×</td>'; }
+      else if(r===0){ html+='<td class="head">'+c+'</td>'; }
+      else if(c===0){ html+='<td class="head">'+r+'</td>'; }
+      else { html+='<td data-r="'+r+'" data-c="'+c+'">'+(r*c)+'</td>'; }
+    }
+    html+='</tr>';
+  }
+  t.innerHTML=html;
+  t.querySelectorAll('td[data-r]').forEach(td=>{
+    td.onclick=()=>{
+      const r=+td.dataset.r, c=+td.dataset.c;
+      t.querySelectorAll('td').forEach(x=>x.classList.remove('hl','sel'));
+      t.querySelectorAll('td[data-r]').forEach(x=>{
+        if(+x.dataset.r===r||+x.dataset.c===c) x.classList.add('hl');
+      });
+      td.classList.add('sel');
+      $('mtRes').innerHTML=r+' × '+c+' = '+(r*c);
+      drawDots(r,c);
+    };
+  });
+  function drawDots(r,c){
+    const box=$('mtDots'); box.innerHTML='';
+    if(r*c>60){ box.innerHTML=''; return; }
+    for(let g=0;g<c;g++){
+      const grp=document.createElement('div'); grp.className='dotgrp';
+      grp.style.gridTemplateColumns='repeat('+Math.min(r,5)+',13px)';
+      for(let i=0;i<r;i++){
+        const d=document.createElement('div'); d.className='dot';
+        d.style.animationDelay=(g*r+i)*0.02+'s';
+        grp.appendChild(d);
+      }
+      box.appendChild(grp);
+    }
+  }
+})();
+
+/* ---------- концепция (анимации) ---------- */
+(function(){
+  let mode='mul', a=3, b=4;
+  const labels={
+    mul:{a:'в группе', b:'групп'},
+    div:{a:'всего', b:'групп'}
+  };
+  function sync(){
+    $('ca').textContent=a; $('cb').textContent=b;
+    $('laba').textContent=labels[mode].a;
+    $('labb').textContent=labels[mode].b;
+  }
+  document.querySelectorAll('.seg').forEach(s=>{
+    s.onclick=()=>{
+      document.querySelectorAll('.seg').forEach(x=>x.classList.remove('active'));
+      s.classList.add('active'); mode=s.dataset.mode;
+      if(mode==='div'){ a=12; b=3; } else { a=3; b=4; }
+      sync(); $('cap').textContent='Нажми «Показать» ▶'; $('baskets').innerHTML='';
+    };
+  });
+  document.querySelectorAll('.stepper button').forEach(btn=>{
+    btn.onclick=()=>{
+      const k=btn.dataset.k, d=+btn.dataset.d;
+      if(k==='a'){ a=Math.max(1,Math.min(mode==='div'?48:10,a+d)); }
+      else { b=Math.max(1,Math.min(10,b+d)); }
+      sync();
+    };
+  });
+  function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+  async function playMul(){
+    const cap=$('cap'), bk=$('baskets'); bk.innerHTML='';
+    cap.textContent=a+' × '+b+' — это '+b+' групп по '+a;
+    const baskets=[];
+    for(let g=0;g<b;g++){
+      const el=document.createElement('div'); el.className='basket';
+      el.style.gridTemplateColumns='repeat('+Math.min(a,4)+',16px)';
+      bk.appendChild(el); baskets.push(el);
+      await delay(180);
+    }
+    let total=0;
+    for(let g=0;g<b;g++){
+      for(let i=0;i<a;i++){
+        const d=document.createElement('div'); d.className='cdot';
+        baskets[g].appendChild(d); total++;
+        cap.textContent='Считаем… '+total;
+        await delay(90);
+      }
+    }
+    cap.innerHTML=a+' × '+b+' = <b style="color:#22c98b">'+(a*b)+'</b> ✅';
+    confetti();
+  }
+
+  async function playDiv(){
+    const cap=$('cap'), bk=$('baskets'); bk.innerHTML='';
+    // a — всего предметов, b — групп; делим поровну
+    const per=Math.floor(a/b), rem=a%b;
+    cap.textContent=a+' конфет раскладываем в '+b+' тарелок поровну';
+    const baskets=[];
+    for(let g=0;g<b;g++){
+      const el=document.createElement('div'); el.className='basket';
+      el.style.gridTemplateColumns='repeat(4,16px)';
+      bk.appendChild(el); baskets.push(el);
+      await delay(160);
+    }
+    // раздаём по одной по кругу
+    let given=0;
+    for(let round=0; round<per; round++){
+      for(let g=0;g<b;g++){
+        const d=document.createElement('div'); d.className='cdot';
+        baskets[g].appendChild(d); given++;
+        cap.textContent='Раздаём… '+given+' из '+(a-rem);
+        await delay(110);
+      }
+    }
+    if(rem===0){
+      cap.innerHTML=a+' ÷ '+b+' = <b style="color:#22c98b">'+per+'</b> ✅ (по '+per+' в каждой)';
+    } else {
+      cap.innerHTML=a+' ÷ '+b+' = <b style="color:#22c98b">'+per+'</b>, остаток <b style="color:#ff9f43">'+rem+'</b>';
+    }
+    confetti();
+  }
+
+  $('play').onclick=()=>{ mode==='mul'?playMul():playDiv(); };
+  sync();
+})();
+</script>
+</body>
+</html>
